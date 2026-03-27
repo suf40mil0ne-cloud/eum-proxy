@@ -3,13 +3,15 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 const EUM_BASE = 'https://www.eum.go.kr';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const path = (req.query.path as string) || '';
-  if (!path.startsWith('/')) {
-    return res.status(400).json({ error: 'invalid path' });
-  }
+ const path = (req.query.path as string) || '';
+const pageNo = (req.query.pageNo as string) || '';
 
-  const targetUrl = `${EUM_BASE}${path}`;
+if (!path.startsWith('/')) {
+  return res.status(400).json({ error: 'invalid path' });
+}
 
+const targetUrl = new URL(`https://www.eum.go.kr${path}`);
+if (pageNo) targetUrl.searchParams.set('pageNo', pageNo);
   try {
     const upstream = await fetch(targetUrl, {
       headers: {
